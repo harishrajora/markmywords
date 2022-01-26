@@ -15,7 +15,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from home import views
+from django.conf.urls.static import static
+from django.conf import settings
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.index, name = "index"),
+    path('loginpage', views.loginpage, name = "loginpage"),
+    path('loginuser', views.loginuser, name = "loginuser"),
+    path('logoutuser', views.logoutuser, name = "logoutuser"),
+    path('dashboard', views.dashboard, name = "dashboard"),
+    path('signup', views.signup, name = "signup"),
+    path('search_word', views.search_word, name = "search_word"),
+    path('search_word_page', views.search_word_page, name = "search_word_page"),
+    path('save_the_word', views.save_the_word, name = "save_the_word")
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

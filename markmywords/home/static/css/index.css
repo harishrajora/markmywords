@@ -1,0 +1,13 @@
+.header {
+  height: 15%;
+  background-color: white;
+  font-family: cursive;
+  font-size: 30px;
+  font-weight:  bold;
+  /* background-color: #e3dddc; */
+}
+
+html, body {
+  height: 100%;
+  background-color: #0a7d53;
+}

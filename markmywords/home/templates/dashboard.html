@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+
+This is dashboard!
+<button class = "btn btn-success" style= "float: right"><a href="{% url 'logoutuser' %}">Logout</a></button>
+
+{% if error == 'user_not_found' %}
+    <div class="no_words_error">
+      Looks like you haven't picked up any words yet!! <a href = "{% url 'search_word_page' %}">Search one now!!</a>
+    </div>
+{% else %}
+  <div class = "word_list">
+      List Found!!
+  </div>
+{% endif %}
+{% endblock content %}

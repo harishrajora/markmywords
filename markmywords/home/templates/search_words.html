@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<br>
+
+{% block script %}
+<script type="text/javascript">
+function search_word(){
+var word = document.getElementById("word").value;
+console.log(word);
+$.ajax ({
+    url : "{% url 'search_word' %}", // the endpoint
+    type : "POST", // http method
+    data : { 'csrfmiddlewaretoken': '{{ csrf_token }}','word': word},
+    success: function callback(response){
+                       window.alert(response);
+                       document.getElementById("meaning").innerHTML = response;
+                       document.getElementById("save_the_word").style.visibility = "visible";
+                    }
+  });
+    }
+
+function save_word_to_list(){
+  var word = document.getElementById("word").value;
+  var meaning = document.getElementById("meaning").value;
+  console.log(word);
+  $.ajax ({
+      url : "{% url 'save_the_word' %}", // the endpoint
+      type : "POST", // http method
+      data : { 'csrfmiddlewaretoken': '{{ csrf_token }}','word': word , 'meaning' : meaning},
+      success: function callback(response){
+                         window.alert("Word Saved Successfully");
+                         document.getElementById("meaning").innerHTML = response;
+                         document.getElementById("save_the_word").style.visibility = "hidden";
+                      }
+    });
+}
+</script>
+{% endblock script %}
+
+<div class="form-outline">
+  <input type="text" id="word" class="form-control" name = "search_word"/>
+
+  <br>
+  <button class = "btn btn-primary" onclick="search_word()">Search</button>
+  <br>
+  <div class = "search_result">
+    <p id = "meaning"></p>
+  </div>
+  <button class = "btn btn-success" id = "save_the_word" style = "visibility:hidden" onclick="save_word_to_list()"> Save Word To List</button>
+</div>
+
+{% endblock content %}
