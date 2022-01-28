@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% block content %}
 
 <br>
@@ -22,15 +23,15 @@ $.ajax ({
 
 function save_word_to_list(){
   var word = document.getElementById("word").value;
-  var meaning = document.getElementById("meaning").value;
-  console.log(word);
+  var meaning = document.getElementById("meaning").innerHTML;
+  console.log(meaning);
   $.ajax ({
       url : "{% url 'save_the_word' %}", // the endpoint
       type : "POST", // http method
       data : { 'csrfmiddlewaretoken': '{{ csrf_token }}','word': word , 'meaning' : meaning},
       success: function callback(response){
                          window.alert("Word Saved Successfully");
-                         document.getElementById("meaning").innerHTML = response;
+                        // document.getElementById("meaning").innerHTML = response;
                          document.getElementById("save_the_word").style.visibility = "hidden";
                       }
     });
@@ -39,6 +40,8 @@ function save_word_to_list(){
 {% endblock script %}
 
 <div class="form-outline">
+<button class = "btn btn-success" style= "float: right"><a href="{% url 'logoutuser' %}">Logout</a></button>
+<br>
   <input type="text" id="word" class="form-control" name = "search_word"/>
 
   <br>

@@ -51,26 +51,57 @@ def signup(request):
             return render(request, 'login.html', {'signup_error' : 'User Created Successfully'})
 
 def dashboard(request):
-    if(not UserTable.objects.all().filter(username = request.POST.get('username')).exists()):
-        print("User not found")
-        return render (request, 'dashboard.html', {'error' : 'user_not_found'})
-    UserTable_obj = UserTable.objects.all().filter(username = request.POST.get('username'))
-    return render(request, 'dashboard.html', {'error', 'user_found'})
+    if(WordMeaning.objects.all().filter(username = request.user).exists()):
+        WordMeaning_obj = WordMeaning.objects.all().filter(username = request.user)
+        word_meanings = {}
+        for obj in WordMeaning_obj:
+            word_meanings[obj.word] = obj.meaning
+        return render(request, 'dashboard.html', {'error': 'user_found', 'word_meanings' : word_meanings})
+    print("User not found")
+    return render (request, 'dashboard.html', {'error' : 'user_not_found'})
+
 
 def search_word_page(request):
     return render(request, "search_words.html")
 
 def save_the_word(request):
-    WordMeaning_obj = WordMeaning()
-    WordMeaning_obj.word = request.POST['word']
-    WordMeaning_obj.meaning = request.POST['word']
-    WordMeaning_obj.username = request.user
+    #Check if that word already Exists
+    if(WordMeaning.objects.all().get(word = request.POST['word']).exists()):
+        id = WordMeaning.objects.all().get(word = request.POST['word']).id
+    else:
+        WordMeaning_obj = WordMeaning()
+        WordMeaning_obj.word = request.POST.get('word')
+        WordMeaning_obj.meaning = request.POST.get('meaning')
+        WordMeaning_obj.username = request.user
+        WordMeaning_obj.save()
+        id = WordMeaning_obj.id
+        print(WordMeaning_obj.id)
+    
+    if(UserTable.objects.all().filter(username = request.user).exists()):
+        user_word_id = UserTable.objects.all().get(username = request.user).list_of_words
+        user_word_id = list(user_word_id)
+        if(id in user_word_id):
+            return HttpResponse("You have already saved this word!!")
+        else:
+            user_word_id.append(id)
+            user_word_id = str(user_word_id)
+            temp_obj = UserTable.objects.all().get(username = request.user)
+            temp_obj.list_of_words = user_word_id
+            temp_obj.save()
+    else:
+        user_obj = UserTable()
+        user_obj.username = request.user
+        user_obj.list_of_words = str(id)
+        user_obj.save()
     return HttpResponse("success")
 
 
 def search_word(request):
-    response = requests.get("https://api.dictionaryapi.dev/api/v2/entries/en/"+request.POST['word'])
-    response = json.loads(response.text)
-    print(response)
-    meaning = response[0]['meanings'][0]['definitions'][0]['definition']
+    if(WordMeaning.objects.all().filter(word = request.POST['word']).exists()):
+        meaning = WordMeaning.objects.all().get(word = request.POST['word']).meaning
+    else:
+        response = requests.get("https://api.dictionaryapi.dev/api/v2/entries/en/"+request.POST['word'])
+        response = json.loads(response.text)
+        print(response)
+        meaning = response[0]['meanings'][0]['definitions'][0]['definition']
     return HttpResponse(meaning)
